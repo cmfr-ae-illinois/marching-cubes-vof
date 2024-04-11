@@ -27,6 +27,6 @@ make
 
 Choose from:
 
-- CASE = PLANE -- SPHERE -- ELLIPSOID -- ORTHOCIRCLE -- SINWAsVE1 -- JET -- DODECAHEDRON
-- N = number of cells in each direction
-- INTERPOLATION = MANSON -- LINEAR -- MIDDLE
+- `CASE` = `PLANE` or `SPHERE` or `ELLIPSOID` or `ORTHOCIRCLE` or `SINWAVE1` or `JET` or `DODECAHEDRON`
+- `N` = number of cells in each direction
+- `INTERPOLATION` = `MANSON` or `LINEAR` or `MIDDLE`
