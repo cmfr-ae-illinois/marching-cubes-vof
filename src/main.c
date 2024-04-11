@@ -3,8 +3,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-#include <time.h>
-#include "constants.h"
+#include <sys/time.h>
 #include "marchingcubes.h"
 #include "vofi.h"
 
@@ -24,23 +23,19 @@ int main(int argc, char *argv[])
 {
   clock_t start, diff;
   long int nx, ny, nz, msec, *vertCtr, *vert;
-  double dx, dy, dz, *colour, *colour_exact, *normalx, *normaly, *normalz;
-  struct CONTOUR *contour, *refmesh;
+  double dx, dy, dz, *colour;
+  struct CONTOUR *contour;
   contour = (struct CONTOUR *) malloc(sizeof(struct CONTOUR));
-  refmesh = (struct CONTOUR *) malloc(sizeof(struct CONTOUR));
 
   /**************** Choose case ********************/
-  /* Between: PLANE -- SPHERE -- ELLIPSOID -- ORTHOCIRCLE -- SINWAVE1 --
-   * JET -- DODECAHEDRON -- GENUS2 */
+  /* Between: PLANE -- SPHERE -- ELLIPSOID -- ORTHOCIRCLE -- SINWAVE1 -- JET -- DODECAHEDRON */
   /*************************************************/
 
-  if (argc < 2)
+  if (argc < 4)
   {
-    printf("Usage: curveval <case> <nx> <interpolation_type>\n");
-    printf(
-        "Case to choose from PLANE -- SPHERE -- ELLIPSOID -- "
-        "ORTHOCIRCLE -- SINWAsVE1 -- JET -- DODECAHEDRON \n");
-    printf("Interpolation methods to choose from MASON -- LINEAR -- MIDDLE\n");
+    printf("Usage: marching-cubes <case> <nx> <interpolation_type>\n");
+    printf("Case to choose from PLANE -- SPHERE -- ELLIPSOID -- ORTHOCIRCLE -- SINWAVE1 -- JET -- DODECAHEDRON \n");
+    printf("Interpolation methods to choose from MANSON -- LINEAR -- MIDDLE\n");
     return 1;
   }
 
@@ -48,21 +43,14 @@ int main(int argc, char *argv[])
   nx = ny = nz = atoi(argv[2]);
   char *interp = argv[3];
 
-  printf(
-      "+-----------------------------------------------------------------------"
-      "-------------------------+\n");
-  printf("+    Curvature evaluation test on %i x %i x %i cells for the %s\n", nx, ny, nz, cas);
-  printf(
-      "+-----------------------------------------------------------------------"
-      "-------------------------+\n");
+  printf("+------------------------------------------------------------------------------------------------+\n");
+  printf("+    Marching-cubes test on %i x %i x %i cells for the case: %s\n", nx, ny, nz, cas);
+  printf("+------------------------------------------------------------------------------------------------+\n");
 
   printf("+    Initialising colour\n");
 
   start = clock();
   colour = (double *) malloc(nx * ny * nz * sizeof(double));
-  normalx = (double *) malloc(nx * ny * nz * sizeof(double));
-  normaly = (double *) malloc(nx * ny * nz * sizeof(double));
-  normalz = (double *) malloc(nx * ny * nz * sizeof(double));
   vertCtr = (long int *) malloc(nx * ny * nz * sizeof(long int));
   vert = (long int *) malloc(6 * nx * ny * nz * sizeof(long int));
   InitialiseDomain(nx, ny, nz, &dx, &dy, &dz, cas);
@@ -71,7 +59,6 @@ int main(int argc, char *argv[])
   diff = clock() - start;
   msec = diff * 1000 / CLOCKS_PER_SEC;
   printf("+      -> dx = %f %f %f\n", dx, dy, dz);
-
   printf("+      -> Colour initialised in %d s %d ms\n", msec / 1000, msec % 1000);
 
   printf("+    Generating contour\n");
@@ -87,17 +74,13 @@ int main(int argc, char *argv[])
   printf("+      -> %i vertices and %i triangles\n", contour->nVertices, contour->nTriangles);
   printf("+      -> Contour generated in %d s %d ms\n", msec / 1000, msec % 1000);
 
-  printf(
-      "+-----------------------------------------------------------------------"
-      "-------------------------+\n");
+  printf("+------------------------------------------------------------------------------------------------+\n");
   printf("+    Writing contour\n");
 
   WriteSurfaceMeshSTL(contour, "surface");
   WriteEulerianMeshVTI(nx, ny, nz, dx, dy, dz, colour, "grid");
 
-  printf(
-      "+-----------------------------------------------------------------------"
-      "-------------------------+\n");
+  printf("+------------------------------------------------------------------------------------------------+\n");
 
   return 0;
 }
@@ -264,7 +247,7 @@ int WriteSurfaceMeshSTL(struct CONTOUR *contour, char *filename)
   for (i = 0; i < contour->nTriangles; i++)
     if (contour->triangles[i].cas >= 0) outTri++;
 
-  char header[80] = "MF Extracted Contour";
+  char header[80] = "Extracted Contour";
   char bytecount[2] = "00";
   long int nfacets = outTri;
   float tmpvertexes[9], dummynormal[3];
@@ -310,9 +293,9 @@ double impl_func_orthocircle(double xy[])
   y = xy[1];
   z = xy[2];
 
-  f0 = (MF_SQ(MF_SQ(x - cx) + MF_SQ(y - cy) - 1.0) + MF_SQ(z - cz)) * (MF_SQ(MF_SQ(y - cy) + MF_SQ(z - cz) - 1.0) + MF_SQ(x - cx)) *
-           (MF_SQ(MF_SQ(z - cz) + MF_SQ(x - cx) - 1.0) + MF_SQ(y - cy)) -
-       MF_SQ(c1) * (1.0 + c2 * (MF_SQ(x - cx) + MF_SQ(y - cy) + MF_SQ(z - cz)));
+  f0 = (SQ(SQ(x - cx) + SQ(y - cy) - 1.0) + SQ(z - cz)) * (SQ(SQ(y - cy) + SQ(z - cz) - 1.0) + SQ(x - cx)) *
+           (SQ(SQ(z - cz) + SQ(x - cx) - 1.0) + SQ(y - cy)) -
+       SQ(c1) * (1.0 + c2 * (SQ(x - cx) + SQ(y - cy) + SQ(z - cz)));
 
   return f0;
 }
@@ -327,7 +310,7 @@ double impl_func_sphere(double xy[])
   y = xy[1];
   z = xy[2];
 
-  f0 = MF_SQ(x - Cx) + MF_SQ(y - Cy) + MF_SQ(z - Cz) - r * r;
+  f0 = SQ(x - Cx) + SQ(y - Cy) + SQ(z - Cz) - r * r;
 
   return f0;
 }
@@ -346,7 +329,7 @@ double impl_func_ellipsoid(double xy[])
   y = xy[1];
   z = xy[2];
 
-  f0 = MF_SQ(x - cx) / MF_SQ(2.0) + MF_SQ(y - cy) / MF_SQ(1.5) + MF_SQ(z - cz) / MF_SQ(1.0) - 1.0;
+  f0 = SQ(x - cx) / SQ(2.0) + SQ(y - cy) / SQ(1.5) + SQ(z - cz) / SQ(1.0) - 1.0;
 
   return f0;
 }
@@ -362,7 +345,7 @@ double impl_func_sinwave1(double xy[])
   y = xy[1];
   z = xy[2];
 
-  f0 = a * x * sin(x * 0.5 * MF_PI) * sin(y * 0.5 * MF_PI) + b - z;
+  f0 = a * x * sin(x * 0.5 * M_PI) * sin(y * 0.5 * M_PI) + b - z;
 
   return f0;
 }
@@ -397,7 +380,7 @@ double impl_func_jet(double xy[])
   y = xy[1];
   z = xy[2];
 
-  f0 = MF_SQ(z - cz) + MF_SQ(y - cy) - MF_SQ(ro * (1.0 + epso * sin(x * MF_PI)));
+  f0 = SQ(z - cz) + SQ(y - cy) - SQ(ro * (1.0 + epso * sin(x * M_PI)));
 
   return f0;
 }
@@ -415,8 +398,8 @@ double impl_func_dodecahedron(double xy[])
   y = xy[1];
   z = xy[2];
 
-  f0 = MF_POW(x - cx, 6.0) + MF_POW(y - cy, 6.0) + MF_POW(z - cz, 6.0) +
-       20.0 * (MF_POW(x - cx, 4.0) * MF_SQ(y - cy) + MF_POW(y - cy, 4.0) * MF_SQ(x - cx) + MF_POW(z - cz, 4.0) * MF_SQ(x - cx) - 2.0);
+  f0 = pow(x - cx, 6.0) + pow(y - cy, 6.0) + pow(z - cz, 6.0) +
+       20.0 * (pow(x - cx, 4.0) * SQ(y - cy) + pow(y - cy, 4.0) * SQ(x - cx) + pow(z - cz, 4.0) * SQ(x - cx) - 2.0);
 
   return f0;
 }
@@ -432,12 +415,8 @@ double impl_func_genus2(double xy[])
   y = xy[1];
   z = xy[2];
 
-  f0 = 2.0 * (y - Cy) * (MF_SQ(y - Cy) - 3.0 * MF_SQ(x - Cx)) * (1.0 - MF_SQ(z - Cz)) + MF_SQ(MF_SQ(x - Cx) + MF_SQ(y - Cy)) -
-       (9.0 * MF_SQ(z - Cz) - 1.0) * (1.0 - MF_SQ(z - Cz));
-
-  //  f0 = -3.0 + 1.0 * (MF_POW(x - cx, 4.0) + MF_POW(y - cy, 4.0) + MF_POW(z -
-  //  cz, 4.0))
-  //      - 0.0 * (MF_SQ(x - cx) + MF_SQ(y - cy) + MF_SQ(z - cz));
+  f0 = 2.0 * (y - Cy) * (SQ(y - Cy) - 3.0 * SQ(x - Cx)) * (1.0 - SQ(z - Cz)) + SQ(SQ(x - Cx) + SQ(y - Cy)) -
+       (9.0 * SQ(z - Cz) - 1.0) * (1.0 - SQ(z - Cz));
 
   return f0;
 }

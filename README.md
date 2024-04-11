@@ -1,5 +1,14 @@
 # Marching cubes
 
+This project contains an implementation of the Marching-Cubes algorithm of [Lorensen and Cline (1987)](https://doi.org/10.1145/37402.37422) for reconstructing a surface from a discrete indicator function.
+
+The code is largely taken from [Paul Bourke's website](https://paulbourke.net/geometry/polygonise/).
+
+Three types of vertex interpolation are implemented:
+- "Middle" (i.e., the vertex is always placed at the middle of the intersected edge)
+- "Linear" (i.e., the vertex position is linearily interpolated from the end-point values of the discrete indicator function)
+- "Manson" (i.e., using the method proposed by [Manson, Smith, and Shaefer (2011)](http://dx.doi.org/10.1111/j.1467-8659.2011.01869.x))
+
 ## Requires 
 - [CMake](https://cmake.org/) (version > 2.8)
 - [Vofi](https://github.com/VOFTracking/Vofi)
@@ -7,16 +16,17 @@
 ## Compilation of marching-cubes
 To compile, follow these steps:
 ```bash
-git clone https://git.multiflow.org/software-toolbox/marching-cubes.git
-cd marching-cubes
-VOFI_DIR=<path_to_vofilibrary> MC_DIR=$PWD ./compile
+mkdir build
+cd build
+VOFI_DIR=<path_to_vofilibrary> MC_DIR=$PWD/.. cmake ..
+make
 ```
 
 ## Execution
-`./build/marching-cubes <CASE> <N> <INTERPOLATION>`
+`marching-cubes <CASE> <N> <INTERPOLATION>`
 
 Choose from:
 
 - CASE = PLANE -- SPHERE -- ELLIPSOID -- ORTHOCIRCLE -- SINWAsVE1 -- JET -- DODECAHEDRON
 - N = number of cells in each direction
-- INTERPOLATION = MASON -- LINEAR -- MIDDLE
+- INTERPOLATION = MANSON -- LINEAR -- MIDDLE

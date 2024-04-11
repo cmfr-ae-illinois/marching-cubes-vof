@@ -3,8 +3,11 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-#include "constants.h"
 #include "marchingcubes.h"
+
+/* This code is adapted from Paul Bourke's marching-cube code, available at:
+    https://paulbourke.net/geometry/polygonise/
+*/
 
 int GenerateContourMC(long int nx, long int ny, long int nz, double dx, double dy, double dz, double *colour, struct CONTOUR *contour, long int *vertCtr,
                       long int *vert, long int interptype)
@@ -83,7 +86,7 @@ int GenerateContourMC(long int nx, long int ny, long int nz, double dx, double d
             {
               DynamicallyVerticeGrow(&contour->vertices, contour->nVertices, 1);
               if (interptype < 2)
-                contour->vertices[contour->nVertices] = VertexInterpMason(isolevel, grid.p[0], grid.p[1], grid.val[0], grid.val[1]);
+                contour->vertices[contour->nVertices] = VertexInterpManson(isolevel, grid.p[0], grid.p[1], grid.val[0], grid.val[1]);
               else if (interptype == 2)
                 contour->vertices[contour->nVertices] = VertexInterp(isolevel, grid.p[0], grid.p[1], grid.val[0], grid.val[1]);
               else
@@ -101,8 +104,6 @@ int GenerateContourMC(long int nx, long int ny, long int nz, double dx, double d
               vert[6 * contour->vertices[contour->nVertices].p[1] + vertCtr[contour->vertices[contour->nVertices].p[1]]] = contour->nVertices;
               vertCtr[contour->vertices[contour->nVertices].p[0]] += 1;
               vertCtr[contour->vertices[contour->nVertices].p[1]] += 1;
-              //              *contour->vertices[contour->nVertices] =
-              //              VertexInterpImproved(isolevel, stencil, 0);
 
               edgx[edgeindex] = contour->nVertices;
               contour->vertices[contour->nVertices].dir = 0;
@@ -122,7 +123,7 @@ int GenerateContourMC(long int nx, long int ny, long int nz, double dx, double d
             {
               DynamicallyVerticeGrow(&contour->vertices, contour->nVertices, 1);
               if (interptype < 2)
-                contour->vertices[contour->nVertices] = VertexInterpMason(isolevel, grid.p[1], grid.p[2], grid.val[1], grid.val[2]);
+                contour->vertices[contour->nVertices] = VertexInterpManson(isolevel, grid.p[1], grid.p[2], grid.val[1], grid.val[2]);
               else if (interptype == 2)
                 contour->vertices[contour->nVertices] = VertexInterp(isolevel, grid.p[1], grid.p[2], grid.val[1], grid.val[2]);
               else
@@ -139,8 +140,6 @@ int GenerateContourMC(long int nx, long int ny, long int nz, double dx, double d
               vert[6 * contour->vertices[contour->nVertices].p[1] + vertCtr[contour->vertices[contour->nVertices].p[1]]] = contour->nVertices;
               vertCtr[contour->vertices[contour->nVertices].p[0]] += 1;
               vertCtr[contour->vertices[contour->nVertices].p[1]] += 1;
-              //              contour->vertices[contour->nVertices] =
-              //              VertexInterpImproved(isolevel, stencil, 1);
 
               edgz[edgeindex] = contour->nVertices;
               contour->vertices[contour->nVertices].dir = 2;
@@ -160,7 +159,7 @@ int GenerateContourMC(long int nx, long int ny, long int nz, double dx, double d
             {
               DynamicallyVerticeGrow(&contour->vertices, contour->nVertices, 1);
               if (interptype < 2)
-                contour->vertices[contour->nVertices] = VertexInterpMason(isolevel, grid.p[3], grid.p[2], grid.val[3], grid.val[2]);
+                contour->vertices[contour->nVertices] = VertexInterpManson(isolevel, grid.p[3], grid.p[2], grid.val[3], grid.val[2]);
               else if (interptype == 2)
                 contour->vertices[contour->nVertices] = VertexInterp(isolevel, grid.p[3], grid.p[2], grid.val[3], grid.val[2]);
               else
@@ -177,8 +176,6 @@ int GenerateContourMC(long int nx, long int ny, long int nz, double dx, double d
               vert[6 * contour->vertices[contour->nVertices].p[1] + vertCtr[contour->vertices[contour->nVertices].p[1]]] = contour->nVertices;
               vertCtr[contour->vertices[contour->nVertices].p[0]] += 1;
               vertCtr[contour->vertices[contour->nVertices].p[1]] += 1;
-              //              contour->vertices[contour->nVertices] =
-              //              VertexInterpImproved(isolevel, stencil, 2);
 
               edgx[edgeindex] = contour->nVertices;
               contour->vertices[contour->nVertices].dir = 0;
@@ -198,7 +195,7 @@ int GenerateContourMC(long int nx, long int ny, long int nz, double dx, double d
             {
               DynamicallyVerticeGrow(&contour->vertices, contour->nVertices, 1);
               if (interptype < 2)
-                contour->vertices[contour->nVertices] = VertexInterpMason(isolevel, grid.p[0], grid.p[3], grid.val[0], grid.val[3]);
+                contour->vertices[contour->nVertices] = VertexInterpManson(isolevel, grid.p[0], grid.p[3], grid.val[0], grid.val[3]);
               else if (interptype == 2)
                 contour->vertices[contour->nVertices] = VertexInterp(isolevel, grid.p[0], grid.p[3], grid.val[0], grid.val[3]);
               else
@@ -215,8 +212,6 @@ int GenerateContourMC(long int nx, long int ny, long int nz, double dx, double d
               vert[6 * contour->vertices[contour->nVertices].p[1] + vertCtr[contour->vertices[contour->nVertices].p[1]]] = contour->nVertices;
               vertCtr[contour->vertices[contour->nVertices].p[0]] += 1;
               vertCtr[contour->vertices[contour->nVertices].p[1]] += 1;
-              //              contour->vertices[contour->nVertices] =
-              //              VertexInterpImproved(isolevel, stencil, 3);
 
               edgz[edgeindex] = contour->nVertices;
               contour->vertices[contour->nVertices].dir = 2;
@@ -236,7 +231,7 @@ int GenerateContourMC(long int nx, long int ny, long int nz, double dx, double d
             {
               DynamicallyVerticeGrow(&contour->vertices, contour->nVertices, 1);
               if (interptype < 2)
-                contour->vertices[contour->nVertices] = VertexInterpMason(isolevel, grid.p[4], grid.p[5], grid.val[4], grid.val[5]);
+                contour->vertices[contour->nVertices] = VertexInterpManson(isolevel, grid.p[4], grid.p[5], grid.val[4], grid.val[5]);
               else if (interptype == 2)
                 contour->vertices[contour->nVertices] = VertexInterp(isolevel, grid.p[4], grid.p[5], grid.val[4], grid.val[5]);
               else
@@ -253,8 +248,6 @@ int GenerateContourMC(long int nx, long int ny, long int nz, double dx, double d
               vert[6 * contour->vertices[contour->nVertices].p[1] + vertCtr[contour->vertices[contour->nVertices].p[1]]] = contour->nVertices;
               vertCtr[contour->vertices[contour->nVertices].p[0]] += 1;
               vertCtr[contour->vertices[contour->nVertices].p[1]] += 1;
-              //              contour->vertices[contour->nVertices] =
-              //              VertexInterpImproved(isolevel, stencil, 4);
 
               edgx[edgeindex] = contour->nVertices;
               contour->vertices[contour->nVertices].dir = 0;
@@ -274,7 +267,7 @@ int GenerateContourMC(long int nx, long int ny, long int nz, double dx, double d
             {
               DynamicallyVerticeGrow(&contour->vertices, contour->nVertices, 1);
               if (interptype < 2)
-                contour->vertices[contour->nVertices] = VertexInterpMason(isolevel, grid.p[5], grid.p[6], grid.val[5], grid.val[6]);
+                contour->vertices[contour->nVertices] = VertexInterpManson(isolevel, grid.p[5], grid.p[6], grid.val[5], grid.val[6]);
               else if (interptype == 2)
                 contour->vertices[contour->nVertices] = VertexInterp(isolevel, grid.p[5], grid.p[6], grid.val[5], grid.val[6]);
               else
@@ -291,8 +284,6 @@ int GenerateContourMC(long int nx, long int ny, long int nz, double dx, double d
               vert[6 * contour->vertices[contour->nVertices].p[1] + vertCtr[contour->vertices[contour->nVertices].p[1]]] = contour->nVertices;
               vertCtr[contour->vertices[contour->nVertices].p[0]] += 1;
               vertCtr[contour->vertices[contour->nVertices].p[1]] += 1;
-              //              contour->vertices[contour->nVertices] =
-              //              VertexInterpImproved(isolevel, stencil, 5);
 
               edgz[edgeindex] = contour->nVertices;
               contour->vertices[contour->nVertices].dir = 2;
@@ -312,7 +303,7 @@ int GenerateContourMC(long int nx, long int ny, long int nz, double dx, double d
             {
               DynamicallyVerticeGrow(&contour->vertices, contour->nVertices, 1);
               if (interptype < 2)
-                contour->vertices[contour->nVertices] = VertexInterpMason(isolevel, grid.p[7], grid.p[6], grid.val[7], grid.val[6]);
+                contour->vertices[contour->nVertices] = VertexInterpManson(isolevel, grid.p[7], grid.p[6], grid.val[7], grid.val[6]);
               else if (interptype == 2)
                 contour->vertices[contour->nVertices] = VertexInterp(isolevel, grid.p[7], grid.p[6], grid.val[7], grid.val[6]);
               else
@@ -329,8 +320,7 @@ int GenerateContourMC(long int nx, long int ny, long int nz, double dx, double d
               vert[6 * contour->vertices[contour->nVertices].p[1] + vertCtr[contour->vertices[contour->nVertices].p[1]]] = contour->nVertices;
               vertCtr[contour->vertices[contour->nVertices].p[0]] += 1;
               vertCtr[contour->vertices[contour->nVertices].p[1]] += 1;
-              //              contour->vertices[contour->nVertices] =
-              //              VertexInterpImproved(isolevel, stencil, 6);
+
               edgx[edgeindex] = contour->nVertices;
               contour->vertices[contour->nVertices].dir = 0;
               vertlist[6] = contour->nVertices;
@@ -349,7 +339,7 @@ int GenerateContourMC(long int nx, long int ny, long int nz, double dx, double d
             {
               DynamicallyVerticeGrow(&contour->vertices, contour->nVertices, 1);
               if (interptype < 2)
-                contour->vertices[contour->nVertices] = VertexInterpMason(isolevel, grid.p[4], grid.p[7], grid.val[4], grid.val[7]);
+                contour->vertices[contour->nVertices] = VertexInterpManson(isolevel, grid.p[4], grid.p[7], grid.val[4], grid.val[7]);
               else if (interptype == 2)
                 contour->vertices[contour->nVertices] = VertexInterp(isolevel, grid.p[4], grid.p[7], grid.val[4], grid.val[7]);
               else
@@ -366,8 +356,6 @@ int GenerateContourMC(long int nx, long int ny, long int nz, double dx, double d
               vert[6 * contour->vertices[contour->nVertices].p[1] + vertCtr[contour->vertices[contour->nVertices].p[1]]] = contour->nVertices;
               vertCtr[contour->vertices[contour->nVertices].p[0]] += 1;
               vertCtr[contour->vertices[contour->nVertices].p[1]] += 1;
-              //              contour->vertices[contour->nVertices] =
-              //              VertexInterpImproved(isolevel, stencil, 7);
 
               edgz[edgeindex] = contour->nVertices;
               contour->vertices[contour->nVertices].dir = 2;
@@ -387,7 +375,7 @@ int GenerateContourMC(long int nx, long int ny, long int nz, double dx, double d
             {
               DynamicallyVerticeGrow(&contour->vertices, contour->nVertices, 1);
               if (interptype < 2)
-                contour->vertices[contour->nVertices] = VertexInterpMason(isolevel, grid.p[0], grid.p[4], grid.val[0], grid.val[4]);
+                contour->vertices[contour->nVertices] = VertexInterpManson(isolevel, grid.p[0], grid.p[4], grid.val[0], grid.val[4]);
               else if (interptype == 2)
                 contour->vertices[contour->nVertices] = VertexInterp(isolevel, grid.p[0], grid.p[4], grid.val[0], grid.val[4]);
               else
@@ -404,8 +392,6 @@ int GenerateContourMC(long int nx, long int ny, long int nz, double dx, double d
               vert[6 * contour->vertices[contour->nVertices].p[1] + vertCtr[contour->vertices[contour->nVertices].p[1]]] = contour->nVertices;
               vertCtr[contour->vertices[contour->nVertices].p[0]] += 1;
               vertCtr[contour->vertices[contour->nVertices].p[1]] += 1;
-              //              contour->vertices[contour->nVertices] =
-              //              VertexInterpImproved(isolevel, stencil, 8);
 
               edgy[edgeindex] = contour->nVertices;
               contour->vertices[contour->nVertices].dir = 1;
@@ -425,7 +411,7 @@ int GenerateContourMC(long int nx, long int ny, long int nz, double dx, double d
             {
               DynamicallyVerticeGrow(&contour->vertices, contour->nVertices, 1);
               if (interptype < 2)
-                contour->vertices[contour->nVertices] = VertexInterpMason(isolevel, grid.p[1], grid.p[5], grid.val[1], grid.val[5]);
+                contour->vertices[contour->nVertices] = VertexInterpManson(isolevel, grid.p[1], grid.p[5], grid.val[1], grid.val[5]);
               else if (interptype == 2)
                 contour->vertices[contour->nVertices] = VertexInterp(isolevel, grid.p[1], grid.p[5], grid.val[1], grid.val[5]);
               else
@@ -442,8 +428,6 @@ int GenerateContourMC(long int nx, long int ny, long int nz, double dx, double d
               vert[6 * contour->vertices[contour->nVertices].p[1] + vertCtr[contour->vertices[contour->nVertices].p[1]]] = contour->nVertices;
               vertCtr[contour->vertices[contour->nVertices].p[0]] += 1;
               vertCtr[contour->vertices[contour->nVertices].p[1]] += 1;
-              //              contour->vertices[contour->nVertices] =
-              //              VertexInterpImproved(isolevel, stencil, 9);
 
               edgy[edgeindex] = contour->nVertices;
               contour->vertices[contour->nVertices].dir = 1;
@@ -463,7 +447,7 @@ int GenerateContourMC(long int nx, long int ny, long int nz, double dx, double d
             {
               DynamicallyVerticeGrow(&contour->vertices, contour->nVertices, 1);
               if (interptype < 2)
-                contour->vertices[contour->nVertices] = VertexInterpMason(isolevel, grid.p[2], grid.p[6], grid.val[2], grid.val[6]);
+                contour->vertices[contour->nVertices] = VertexInterpManson(isolevel, grid.p[2], grid.p[6], grid.val[2], grid.val[6]);
               else if (interptype == 2)
                 contour->vertices[contour->nVertices] = VertexInterp(isolevel, grid.p[2], grid.p[6], grid.val[2], grid.val[6]);
               else
@@ -480,8 +464,6 @@ int GenerateContourMC(long int nx, long int ny, long int nz, double dx, double d
               vert[6 * contour->vertices[contour->nVertices].p[1] + vertCtr[contour->vertices[contour->nVertices].p[1]]] = contour->nVertices;
               vertCtr[contour->vertices[contour->nVertices].p[0]] += 1;
               vertCtr[contour->vertices[contour->nVertices].p[1]] += 1;
-              //              contour->vertices[contour->nVertices] =
-              //              VertexInterpImproved(isolevel, stencil, 10);
 
               edgy[edgeindex] = contour->nVertices;
               contour->vertices[contour->nVertices].dir = 1;
@@ -501,7 +483,7 @@ int GenerateContourMC(long int nx, long int ny, long int nz, double dx, double d
             {
               DynamicallyVerticeGrow(&contour->vertices, contour->nVertices, 1);
               if (interptype < 2)
-                contour->vertices[contour->nVertices] = VertexInterpMason(isolevel, grid.p[3], grid.p[7], grid.val[3], grid.val[7]);
+                contour->vertices[contour->nVertices] = VertexInterpManson(isolevel, grid.p[3], grid.p[7], grid.val[3], grid.val[7]);
               else if (interptype == 2)
                 contour->vertices[contour->nVertices] = VertexInterp(isolevel, grid.p[3], grid.p[7], grid.val[3], grid.val[7]);
               else
@@ -518,9 +500,6 @@ int GenerateContourMC(long int nx, long int ny, long int nz, double dx, double d
               vert[6 * contour->vertices[contour->nVertices].p[1] + vertCtr[contour->vertices[contour->nVertices].p[1]]] = contour->nVertices;
               vertCtr[contour->vertices[contour->nVertices].p[0]] += 1;
               vertCtr[contour->vertices[contour->nVertices].p[1]] += 1;
-
-              //              contour->vertices[contour->nVertices] =
-              //              VertexInterpImproved(isolevel, stencil, 11);
 
               edgy[edgeindex] = contour->nVertices;
               contour->vertices[contour->nVertices].dir = 1;
@@ -640,7 +619,7 @@ struct XYZ VertexInterp(double isolevel, struct XYZ p1, struct XYZ p2, double va
   return (p);
 }
 
-struct XYZ VertexInterpMason(double isolevel, struct XYZ p1, struct XYZ p2, double valp1, double valp2)
+struct XYZ VertexInterpManson(double isolevel, struct XYZ p1, struct XYZ p2, double valp1, double valp2)
 {
   struct XYZ p;
   long int inv;
@@ -713,10 +692,10 @@ struct XYZ VertexInterpMason(double isolevel, struct XYZ p1, struct XYZ p2, doub
   }
 
   /* Making sure vertex won't coincide with sampling grid point */
-  if (mu > 1.0 - MF_VERYSMALL)
-    mu = 1.0 - MF_VERYSMALL;
-  else if (mu < MF_VERYSMALL)
-    mu = MF_VERYSMALL;
+  if (mu > 1.0 - VERYSMALL)
+    mu = 1.0 - VERYSMALL;
+  else if (mu < VERYSMALL)
+    mu = VERYSMALL;
 
   if (inv)
   {

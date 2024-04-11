@@ -1,27 +1,19 @@
 #define TRI_PREALLOCATION (1000000)
+#define VERYSMALL (1.0e-14)
 #define SQ(x) ((x) * (x))
+
+/* This code is adapted from Paul Bourke's marching-cube code, available at:
+    https://paulbourke.net/geometry/polygonise/
+*/
 
 struct XYZ
 {
-  double x, y, z, weight, dist;
-  double n[3], u[3], v[3];
-  double K1, K2, K, Kexact, Error, NormalError, mu, sigma, stencilsize;
-  double *meanKParaboloid, *meanK2ndorder, *TaubinErrorLinfParaboloid, *TaubinErrorL2Paraboloid, *TaubinErrorLinf2ndorder, *TaubinErrorL22ndorder,
-      *NormalErrorLinfParaboloid, *NormalErrorL2Paraboloid, *NormalErrorLinf2ndorder, *NormalErrorL22ndorder, *TaubinStdDeviationParaboloid,
-      *TaubinStdDeviation2ndorder, *ConditionNumber;
-  double gradF[3], coeffsA[3][3], coeffsB[3], coeffc;
+  double x, y, z, mu;  
   int parent, p[2];
   int nNeigh, neigh[1000];
-  int *nRing, **ring;
-  int *nStencil, **stencil;
   int nEdge, edges[64];
   int nTriangles, triangles[64];
   int cas, dir;
-  int TaubinIter;
-
-  int valence, initlevel;
-  double Alpha, Pinit[3], Pinf[3];
-  int stencil0[64];
 };
 
 struct EDGE
@@ -35,9 +27,6 @@ struct TRIANGLE
   int p[3];
   int nNeigh, neigh[64];
   int nEdges, edges[64];
-  double c[3], n[3], u[3], v[3];
-  double area;
-  double K1, K2, K;
   int parent, marker, cas, split, index, mate;
 };
 
@@ -334,9 +323,15 @@ static int triTable[256][16] = {{-1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1,
                                 {0, 3, 8, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1},
                                 {-1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1}};
 
+int InitialiseDomain(long int nx, long int ny, long int nz, double *dx, double *dy, double *dz, char *cas);
+int InitialiseColourField(long int nx, long int ny, long int nz, double dx, double dy, double dz, double *colour, char *cas);
+int WriteEulerianMeshVTI(long int nx, long int ny, long int nz, double dx, double dy, double dz, double *colour, char *filename);
+int WriteSurfaceMeshSTL(struct CONTOUR *contour, char *filename);
+int GenerateContourMC(long int nx, long int ny, long int nz, double dx, double dy, double dz, double *colour, struct CONTOUR *contour, long int *vertCtr,
+                      long int *vert, long int interptype);
+                      
 struct XYZ VertexInterpHalf(double isolevel, struct XYZ p1, struct XYZ p2, double valp1, double valp2);
 struct XYZ VertexInterp(double isolevel, struct XYZ p1, struct XYZ p2, double valp1, double valp2);
-struct XYZ VertexInterpMason(double isolevel, struct XYZ p1, struct XYZ p2, double valp1, double valp2);
+struct XYZ VertexInterpManson(double isolevel, struct XYZ p1, struct XYZ p2, double valp1, double valp2);
 int DynamicallyTriangleGrow(struct TRIANGLE **A, long int oldsize, long int increase);
 int DynamicallyVerticeGrow(struct XYZ **A, long int oldsize, long int increase);
-int WriteSurfaceMeshSTL(struct CONTOUR *contour, char *filename);
