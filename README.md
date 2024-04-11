@@ -7,7 +7,7 @@ The code is largely taken from [Paul Bourke's website](https://paulbourke.net/ge
 Three types of vertex interpolation are implemented:
 - `MIDDLE`: the vertex is always positioned in the middle of the intersected edge.
 - `LINEAR`: the vertex position is linearily interpolated from the end-point values of the discrete indicator function.
-- `MANSON`: using the method proposed by [Manson, Smith, and Shaefer (2011)](http://dx.doi.org/10.1111/j.1467-8659.2011.01869.x).
+- `MANSON`: using the method proposed by [Manson, Smith, and Schaefer (2011)](http://dx.doi.org/10.1111/j.1467-8659.2011.01869.x).
 
 ## Requires 
 - [CMake](https://cmake.org/) (version > 2.8)
