@@ -5,9 +5,9 @@ This project contains an implementation of the Marching-Cubes algorithm of [Lore
 The code is largely taken from [Paul Bourke's website](https://paulbourke.net/geometry/polygonise/).
 
 Three types of vertex interpolation are implemented:
-- "Middle" (i.e., the vertex is always placed at the middle of the intersected edge)
-- "Linear" (i.e., the vertex position is linearily interpolated from the end-point values of the discrete indicator function)
-- "Manson" (i.e., using the method proposed by [Manson, Smith, and Shaefer (2011)](http://dx.doi.org/10.1111/j.1467-8659.2011.01869.x))
+- `MIDDLE`: the vertex is always positioned in the middle of the intersected edge.
+- `LINEAR`: the vertex position is linearily interpolated from the end-point values of the discrete indicator function.
+- `MANSON`: using the method proposed by [Manson, Smith, and Shaefer (2011)](http://dx.doi.org/10.1111/j.1467-8659.2011.01869.x).
 
 ## Requires 
 - [CMake](https://cmake.org/) (version > 2.8)
@@ -18,7 +18,7 @@ To compile, follow these steps:
 ```bash
 mkdir build
 cd build
-VOFI_DIR=<path_to_vofilibrary> MC_DIR=$PWD/.. cmake ..
+VOFI_DIR=<path_to_vofi_library> MC_DIR=$PWD/.. cmake ..
 make
 ```
 
